@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Track Drops</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="assets/default.png" type="image/png">
+<script src="https://cdn.jsdelivr.net/npm/@metamask/detect-provider/dist/detect-provider.min.js"></script>
+</head>
+
+<body>
+<script type="module">
+  import { sdk } from "https://esm.sh/@farcaster/mini-apps-sdk";
+  sdk.actions.ready();
+</script>
+<div class="hero">
+    <div class="hero-title">Wen Airdrop? Find Out.</div>
+    <div class="hero-sub">Connect your wallet and let the scanner reveal your rewards.</div>
+
+    <div class="wallet-box">
+        <button id="connectBtn" onclick="connectWallet()">Connect Wallet</button>
+        <button id="disconnectBtn" onclick="disconnectWallet()" style="display:none;background:#ff4d4d;">Disconnect</button>
+
+        <!-- Hidden until wallet connected -->
+        <input type="text" id="wallet" placeholder="Wallet address" disabled>
+
+        <!-- Check button (also hidden initially) -->
+        <button id="checkBtn" onclick="checkAirdrop()">Check</button>
+    </div>
+</div>
+
+<div class="results">
+    <h2>Your Airdrops</h2>
+    <div id="cards" class="cards"></div>
+</div>
+
+<!-- Loader -->
+<div id="overlay" class="overlay hidden">
+    <div class="loader-box">
+        <div class="spinner"></div>
+        <div class="loader-text">Checking...</div>
+    </div>
+</div>
+
+<!-- Alert Box -->
+<div id="alertOverlay" class="overlay hidden">
+    <div class="loader-box" style="padding:25px 30px;">
+        <div style="font-size:20px;margin-bottom:10px;">Alert</div>
+        <div id="alertMessage" style="opacity:0.8;margin-bottom:15px;"></div>
+        <button onclick="closeAlert()" style="padding:10px 22px;background:#4da3ff;border:none;border-radius:8px;cursor:pointer;color:#fff;font-size:15px;">OK</button>
+    </div>
+</div>
+
+
+<!-- ===========================
+       FINAL FIXED JAVASCRIPT
+=========================== -->
+<script>
+let provider = null;
+let currentAccount = null;
+
+/* INITIAL HIDE */
+document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("wallet").style.display = "none";
+    document.getElementById("checkBtn").style.display = "none";
+    document.querySelector(".results h2").style.display = "none";
+});
+
+/* CONNECT WALLET */
+async function connectWallet() {
+    provider = await detectEthereumProvider();
+    if (!provider) return showAlert("MetaMask not found.");
+
+    try {
+        const accounts = await provider.request({ method: "eth_requestAccounts" });
+        currentAccount = accounts[0];
+
+        document.getElementById("wallet").value = currentAccount;
+
+        document.getElementById("connectBtn").style.display = "none";
+        document.getElementById("disconnectBtn").style.display = "inline-block";
+
+        document.getElementById("wallet").style.display = "inline-block";
+        document.getElementById("checkBtn").style.display = "inline-block";
+
+        localStorage.setItem("connectedWallet", currentAccount);
+
+    } catch (err) {
+        showAlert("Wallet connection rejected.");
+    }
+}
+
+/* DISCONNECT */
+async function disconnectWallet() {
+    try {
+        await provider.request({ method: "eth_requestAccounts" });
+
+        currentAccount = null;
+
+        document.getElementById("wallet").value = "";
+        document.getElementById("connectBtn").style.display = "inline-block";
+        document.getElementById("disconnectBtn").style.display = "none";
+
+        document.getElementById("wallet").style.display = "none";
+        document.getElementById("checkBtn").style.display = "none";
+
+        document.querySelector(".results h2").style.display = "none";
+        document.getElementById("cards").innerHTML = "";
+
+        localStorage.removeItem("connectedWallet");
+
+    } catch (err) {
+        showAlert("Disconnect cancelled.");
+    }
+}
+
+/* AUTO LOGIN */
+async function autoLogin() {
+    provider = await detectEthereumProvider();
+    if (!provider) return;
+
+    const savedWallet = localStorage.getItem("connectedWallet");
+    if (!savedWallet) return;
+
+    try {
+        const accounts = await provider.request({ method: "eth_accounts" });
+
+        if (accounts.length > 0 && accounts[0].toLowerCase() === savedWallet.toLowerCase()) {
+
+            currentAccount = accounts[0];
+
+            document.getElementById("wallet").value = currentAccount;
+            document.getElementById("connectBtn").style.display = "none";
+            document.getElementById("disconnectBtn").style.display = "inline-block";
+
+            document.getElementById("wallet").style.display = "inline-block";
+            document.getElementById("checkBtn").style.display = "inline-block";
+
+        } else {
+            localStorage.removeItem("connectedWallet");
+        }
+
+    } catch (err) {
+        localStorage.removeItem("connectedWallet");
+    }
+}
+window.addEventListener("load", autoLogin);
+
+/* LOADER */
+function showLoader() { document.getElementById("overlay").classList.remove("hidden"); }
+function hideLoader() { document.getElementById("overlay").classList.add("hidden"); }
+
+/* CHECK AIRDROP */
+async function checkAirdrop() {
+    if (!currentAccount) return showAlert("Please connect wallet.");
+
+    showLoader();
+    try {
+        const res = await fetch("api.php?address=" + currentAccount);
+        const data = await res.json();
+        hideLoader();
+
+        if (data.error) return showAlert(data.error);
+
+        renderCards(data);
+
+    } catch (err) {
+        hideLoader();
+        showAlert("Error fetching data.");
+    }
+}
+
+/* RENDER RESULTS */
+function renderCards(data) {
+    const box = document.getElementById("cards");
+    const title = document.querySelector(".results h2");
+
+    box.innerHTML = "";
+    title.style.display = "none";
+
+    const clean = data.filter(item => {
+        const id = (item.id ?? item.airdropId ?? "").toLowerCase();
+        return id !== "unknown" && !id.includes("hidden-airdrop");
+    });
+
+    if (clean.length === 0) return showAlert("This address got no drops.");
+
+    title.style.display = "block";
+
+    clean.forEach(item => {
+        const id = item.id ?? item.airdropId ?? "Unknown";
+        const readable = id.replace(/-/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+        const claimed = item.claimed ? "Claimed" : "Not Claimed";
+        const amount = Number(item.amount ?? 0).toLocaleString();
+        const usd = Number(item.usd ?? item.fiatValue ?? 0).toLocaleString(undefined, { minimumFractionDigits: 2 });
+
+        box.innerHTML += `
+            <div class="card">
+                <img class="icon-box" src="assets/default.png">
+                <div class="card-title">${readable}</div>
+                <div style="margin-top:6px;line-height:20px;">
+                    <small>Status: <strong>${claimed}</strong></small><br>
+                    <small>Amount: <strong>${amount}</strong></small><br>
+                    <small>USD Value: <strong>$${usd}</strong></small>
+                </div>
+            </div>
+        `;
+    });
+}
+
+/* ALERT SYSTEM */
+function showAlert(msg) {
+    document.getElementById("alertMessage").innerText = msg;
+    document.getElementById("alertOverlay").classList.remove("hidden");
+}
+function closeAlert() {
+    document.getElementById("alertOverlay").classList.add("hidden");
+}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@farcaster/miniapp-sdk/dist/index.min.js"></script>
+<script>
+    window.addEventListener('load', async () => {
+      if (window.miniapp && miniapp.sdk && miniapp.sdk.actions) {
+        await miniapp.sdk.actions.ready();
+        console.log("✅ ready() called");
+      } else {
+        console.error("❌ SDK not loaded or not in Mini App context");
+      }
+    });
+</script>
+</body>
+</html>

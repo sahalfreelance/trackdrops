@@ -1,0 +1,257 @@
+/* GLOBAL */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: #0a0f1b;
+    color: #fff;
+}
+
+h1, h2, p {
+    margin: 0;
+}
+
+/* ===========================
+        NAVBAR
+=========================== */
+.navbar {
+    padding: 18px 28px;
+    font-size: 22px;
+    font-weight: bold;
+    color: #4da3ff;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.navbar .logo {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    border-radius: 10px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+}
+
+.navbar .brand {
+    font-size: 22px;
+    font-weight: 700;
+    line-height: 1;
+    color: #4da3ff;
+}
+
+/* ===========================
+          HERO
+=========================== */
+.hero {
+    text-align: center;
+    padding: 70px 20px 50px;
+}
+
+.hero-title {
+    font-size: 48px;
+    font-weight: bold;
+}
+
+.hero-sub {
+    font-size: 17px;
+    opacity: 0.7;
+    margin-top: 12px;
+}
+
+.wallet-box {
+    margin-top: 40px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.wallet-box input {
+    width: 360px;
+    padding: 14px 18px;
+    font-size: 16px;
+    border-radius: 12px;
+    border: none;
+    outline: none;
+    background: #111828;
+    color: #fff;
+}
+
+.wallet-box input:focus {
+    border: 1px solid #4da3ff;
+    box-shadow: 0 0 12px #4da3ff40;
+}
+
+.wallet-box button {
+    padding: 14px 22px;
+    background: #4da3ff;
+    font-size: 16px;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    color: #fff;
+    transition: 0.2s;
+    font-weight: 600;
+}
+
+.wallet-box button:hover {
+    background: #368ce0;
+}
+
+/* ===========================
+        RESULTS
+=========================== */
+.results {
+    padding: 40px 40px 100px;
+}
+
+.results h2 {
+    margin-bottom: 20px;
+    font-size: 28px;
+}
+
+/* ⭐ FEATURE 4 — Better Responsive Grid */
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 22px;
+    justify-content: center;
+    align-items: start;
+}
+
+/* COMPACT PREMIUM CARD */
+.card {
+    background: rgba(17, 24, 40, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    padding: 18px;                /* dari 26px → lebih kecil */
+    border-radius: 16px;          /* sedikit lebih kecil */
+    border: 1px solid rgba(255,255,255,0.06);
+
+    box-shadow:
+        0 4px 14px rgba(0,0,0,0.40),
+        inset 0 0 22px rgba(255,255,255,0.02);
+
+    min-height: 200px;            /* dari 260px → lebih compact */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    opacity: 0;
+    transform: translateY(12px);
+    animation: fadeCard 0.45s ease forwards;
+
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border 0.25s ease;
+}
+
+.card:hover {
+    transform: translateY(-8px);
+    box-shadow:
+        0 10px 24px rgba(0,0,0,0.55),
+        0 0 12px rgba(77,163,255,0.20);
+    border: 1px solid rgba(77,163,255,0.35);
+}
+
+/* Title lebih kecil */
+.card-title {
+    font-size: 18px;
+    font-weight: 700;
+}
+
+/* Fade-in intro animation */
+@keyframes fadeCard {
+    0% { opacity: 0; transform: translateY(14px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+/* Icon lebih kecil */
+.card img,
+.icon-box {
+    width: 54%;              /* dari 64% → lebih kecil */
+    margin: 4px auto 12px;
+    filter: drop-shadow(0 3px 6px rgba(0,0,0,0.35));
+}
+
+/* Text lebih compact */
+.card small {
+    font-size: 13px;
+    opacity: 0.80;
+}
+/* ===========================
+          OVERLAY
+=========================== */
+.overlay {
+    position: fixed;
+    inset: 0;
+    backdrop-filter: blur(7px);
+    background: rgba(0,0,0,0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    transition: opacity .25s ease;
+}
+
+.overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.loader-box {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+    padding: 26px 34px;
+    border-radius: 16px;
+    text-align: center;
+    animation: popIn .25s ease;
+}
+
+.spinner {
+    width: 42px;
+    height: 42px;
+    border: 4px solid rgba(255,255,255,0.15);
+    border-top-color: #4da3ff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    margin: 0 auto 12px;
+}
+
+.loader-text {
+    color: #ffffff;
+    font-size: 15px;
+    opacity: 0.9;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes popIn {
+    from { transform: scale(0.85); opacity: 0; }
+    to { transform: scale(1); opacity: 1); }
+}
+/* ===========================
+    FIX OVERFLOW MOBILE
+=========================== */
+
+/* cegah geser kanan */
+html, body {
+    overflow-x: hidden;
+}
+
+/* input terlalu lebar (360px) → bikin overflow di HP 320px */
+.wallet-box input {
+    max-width: 100%;
+}
+
+/* padding results terlalu besar untuk mobile kecil */
+@media (max-width: 420px) {
+    .results {
+        padding: 30px 20px 80px;
+    }
+}
+
+/* card grid kadang bikin overflow di layar sangat kecil */
+.cards {
+    width: 100%;
+    margin: 0 auto;
+}
