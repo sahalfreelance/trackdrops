@@ -1,0 +1,35 @@
+{
+  "frame": {
+    "name": "Trackdrops",
+    "version": "1",
+    "iconUrl": "https://trackdrops.iceiy.com/assets/logo.png",
+    "homeUrl": "https://trackdrops.iceiy.com",
+    "imageUrl": "https://trackdrops.iceiy.com/assets/ss.png",
+    "buttonTitle": "Find Out",
+    "splashImageUrl": "https://trackdrops.iceiy.com/assets/logo.png",
+    "splashBackgroundColor": "#0a0f1b",
+    "webhookUrl": "https://trackdrops.iceiy.com/",
+    "subtitle": "Find out your hidden airdrop",
+    "description": "Find your airdrop here, maybe you forgot or maybe you got something unexpected.",
+    "primaryCategory": "productivity",
+    "screenshotUrls": [
+      "https://trackdrops.iceiy.com/assets/ss.png"
+    ],
+    "heroImageUrl": "https://trackdrops.iceiy.com/assets/logo.png",
+    "tags": [
+      "airdrops",
+      "community",
+      "opportunity"
+    ],
+    "tagline": "Wen Airdrop? Find Out.",
+    "ogTitle": "Trackdrops - Find out",
+    "ogDescription": "Find your airdrop here, maybe you forgot or maybe you got something unexpected.",
+    "ogImageUrl": "https://trackdrops.iceiy.com/assets/ss.png",
+    "castShareUrl": "https://warpcast.com/~/compose?text=Find+out+your+hidden+airdrops"
+  },
+  "accountAssociation": {
+    "header": "eyJmaWQiOjg1NDE1NSwidHlwZSI6ImF1dGgiLCJrZXkiOiIweEEyQzM5QWQ1NTE4M2VCNmQwYWEyM0RiRDIxMkQxM2FCNzhENkZhRTMifQ",
+    "payload": "eyJkb21haW4iOiJ0cmFja2Ryb3BzLmljZWl5LmNvbSJ9",
+    "signature": "SbXuE4d1bnZGKtuOelDxMZ20gKTN1259jzaa24OUMChCu4huhVQboFjlG4AmInH93lJkAJA1rcOQTCYR0PtQARs="
+  }
+}
